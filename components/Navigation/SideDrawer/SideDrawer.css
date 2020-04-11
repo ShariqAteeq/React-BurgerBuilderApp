@@ -8,7 +8,7 @@
     padding: 32px 16px;
     z-index: 200;
     box-sizing: border-box;
-    transition: transform 0.3s ease-in;
+    transition: transform 0.3s ease-out;
     height: 100%;
 }
 
