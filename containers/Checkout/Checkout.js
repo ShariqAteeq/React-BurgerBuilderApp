@@ -1,26 +1,29 @@
 import React, {Component} from 'react';
 import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
-
+import {Route} from 'react-router-dom';
+import ContactData from '../Checkout/ContactData/ContactData';
 
 class Checkout extends Component{
 
     state = {
-        ingre : {
-            salad : 1,
-            meat : 1,
-            bacon : 1,
-            cheese : 2
-        }
+        ingre : null,
+        Totalprice : 0
     }
 
-    componentDidMount(){
+    componentWillMount(){
         let queryParams = new URLSearchParams(this.props.location.search);
         let ingredients = {};
+        let price = 0;
         for (let param of queryParams.entries()){ //The entries() method returns an Array Iterator object with key/value pairs.
             // ['salad' , '1']
+            if(param[0] === 'price'){
+                price = param[1];
+            }
+            else{
             ingredients[param[0]] = +param[1]; //+ sign is used to convert in number
         }
-        this.setState({ingre:ingredients});
+    }
+        this.setState({ingre:ingredients , Totalprice : price});
     }
 
     cancelhandler = () =>{
@@ -28,7 +31,7 @@ class Checkout extends Component{
     }
 
     continueHandler = () =>{
-        this.props.history.replace('/checkout.contact-data');
+        this.props.history.replace('/checkout/contact-data');
     }
 
     render(){
@@ -42,6 +45,11 @@ class Checkout extends Component{
                 checkoutCancelled = {this.cancelhandler}
                 checkoutContinued = {this.continueHandler}
                  />
+             <Route path = {this.props.match.path + '/contact-data'} 
+                    render = {(props)=> <ContactData ingredients = {this.state.ingre} 
+                                                    price = {this.state.Totalprice}
+                                                    {...props} />} //here props are used to get history props
+             />
             </div>
         );
     }
