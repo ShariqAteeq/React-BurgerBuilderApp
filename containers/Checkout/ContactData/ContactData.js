@@ -4,7 +4,6 @@ import classes from './ContactData.css';
 import axios from '../../../axios-orders';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
-import { element } from 'prop-types';
 
 class ContactData extends Component{
     
@@ -14,9 +13,14 @@ class ContactData extends Component{
                     elementType : 'input',
                     elementConfig :{
                         type : 'text',
-                        placeholder : 'Yout Name'
+                        placeholder : 'Yout Name',
+                      //  required : true
                     },
-                    value : '' 
+                    value : '' ,
+                    validation : {
+                        required : true
+                    },
+                    valid : false
                 },
                 Email : {
                     elementType : 'input',
@@ -24,7 +28,11 @@ class ContactData extends Component{
                         type : 'email',
                         placeholder : 'Yout E-Mail'
                     },
-                    value : '' 
+                    value : '' ,
+                    validation : {
+                        required : true
+                    },
+                    valid : false
                 },
                 Street : {
                     elementType : 'input',
@@ -32,7 +40,11 @@ class ContactData extends Component{
                         type : 'text',
                         placeholder : 'Street'
                     },
-                    value : '' 
+                    value : '' ,
+                    validation : {
+                        required : true
+                    },
+                    valid : false
                 },
                 ZipCode : {
                     elementType : 'input',
@@ -40,7 +52,13 @@ class ContactData extends Component{
                         type : 'text',
                         placeholder : 'ZIP code'
                     },
-                    value : '' 
+                    value : '' ,
+                    validation : {
+                        required : true,
+                        minLength : 5,
+                        maxLength : 6
+                    },
+                    valid : false
                 },
                 Country : {
                     elementType : 'input',
@@ -48,7 +66,11 @@ class ContactData extends Component{
                         type : 'text',
                         placeholder : 'Country'
                     },
-                    value : '' 
+                    value : '' ,
+                    validation : {
+                        required : true
+                    },
+                    valid : false
                 },
                 DeliveryMethod :{
                     elementType : 'select',
@@ -68,9 +90,15 @@ class ContactData extends Component{
             event.preventDefault();
             this.setState({loading : true});
 
+            const formData = {};
+            for(let key in this.state.orderForm){
+                formData[key] = this.state.orderForm[key].value;
+            }
+
         const order = {
             Ingredients : this.props.ingredients,
             TotalPrice : this.props.price,
+            OrderData : formData
         }
 
         axios.post('Orders.json',order)
@@ -83,16 +111,59 @@ class ContactData extends Component{
         });
     }
 
+    inputHandler = (event , inputKey) => {
+        const updatedOrderForm = {
+            ...this.state.orderForm
+        }
+        const updatedFormElement = {
+            ...this.state.orderForm[inputKey]
+        }
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value , updatedFormElement.validation);
+        updatedOrderForm[inputKey] = updatedFormElement;
+        this.setState({orderForm: updatedOrderForm});
+        console.log(updatedOrderForm);
+    }
+
+
+    checkValidity(value , rules){
+        let isValid = true;
+        if(rules.required){
+            isValid = value.trim() !== '' && isValid; //trim is used to remove whitespaces
+        }
+
+        if(rules.minLength){
+            isValid =value.length >= rules.minLength && isValid;
+        }
+
+        if(rules.maxLength){
+            isValid =value.length <= rules.maxLength && isValid;
+        }
+
+        return isValid;
+    }
+
     render(){
 
+        let formElementArray = [];
+        for(let key in this.state.orderForm){
+            //here keys are name,email,street
+            formElementArray.push({
+                id : key,
+                config : this.state.orderForm[key] //this store elementType,config & value
+            });
+        }
+
         let form = (
-            <form>
-              
-                <Input inptype = {'input'}type = 'text' name = 'name' placeholder = 'Your Name' />
-                <Input inptype = {'input'} type = 'email' name = 'email' placeholder = 'Your Mail' />
-                <Input inptype = {'input'}type = 'text' name = 'street' placeholder = 'Street' />
-                <Input inptype = {'input'}type = 'text' name = 'postal' placeholder = 'Postal Code' />
-                <Button btnType = 'Success' clicked = {this.orderHandler} >ORDER</Button>
+            <form onSubmit = {this.orderHandler}>
+                {formElementArray.map(formElement => (
+                    <Input inptype = {formElement.config.elementType}
+                            elementConfig = {formElement.config.elementConfig}
+                            value = {formElement.config.value} 
+                            key = {formElement.id} 
+                            changed = {(event) => this.inputHandler(event , formElement.id)}/>
+                ))}
+                <Button btnType = 'Success' >ORDER</Button>
                
             </form>
         ); 
