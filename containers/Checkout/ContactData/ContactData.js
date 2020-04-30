@@ -5,7 +5,8 @@ import axios from '../../../axios-orders';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import {connect} from 'react-redux';
-
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import * as Orderactions from '../../../store/actions/index'; 
 
 class ContactData extends Component{
     
@@ -111,14 +112,9 @@ class ContactData extends Component{
             OrderData : formData
         }
 
-        axios.post('Orders.json',order)
-        .then(response => {
-            this.setState({loading:false });
-            this.props.history.push('/');
-        })
-        .catch(error =>{
-            this.setState({loading:false })
-        });
+        this.props.onOrder(order);
+
+        //his.props.history.push('/');
     }
 
     inputHandler = (event , inputKey) => {
@@ -208,4 +204,10 @@ const mapStateToProps = state =>{
     };
 }
 
-export default connect(mapStateToProps)(ContactData);
+const mapDispatchToProps = dispatch => {
+    return{
+        onOrder : (order) => dispatch(Orderactions.burgerStart(order))
+    };
+}
+
+export default connect(mapStateToProps , mapDispatchToProps)(withErrorHandler(ContactData , axios));
