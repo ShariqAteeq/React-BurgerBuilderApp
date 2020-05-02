@@ -17,7 +17,7 @@ export const remIng = (ingName) => {
 export const setIng = (ingredients) => {
     return{
         type : actionTypes.SET_ING,
-        ingredient : ingredients
+        ingredients : ingredients
     };
 }
 

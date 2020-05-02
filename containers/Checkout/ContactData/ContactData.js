@@ -88,19 +88,16 @@ class ContactData extends Component{
                             {value : 'Cheapest' , displayValue : 'Cheapest'}
                         ]
                     },
-                    value : '' ,
+                    value : 'Fastest' ,
                     validation : {},
                     valid : true
                 }   
         },
-        loading : false,
         formIsValid : false
     }
     
     orderHandler = (event) =>{
             event.preventDefault();
-            this.setState({loading : true});
-
             const formData = {};
             for(let key in this.state.orderForm){
                 formData[key] = this.state.orderForm[key].value;
@@ -114,7 +111,6 @@ class ContactData extends Component{
 
         this.props.onOrder(order);
 
-        //his.props.history.push('/');
     }
 
     inputHandler = (event , inputKey) => {
@@ -184,7 +180,7 @@ class ContactData extends Component{
             </form>
         ); 
 
-        if(this.state.loading){
+        if(this.props.loading){
             form = <Spinner />;
         }
 
@@ -199,14 +195,15 @@ class ContactData extends Component{
 
 const mapStateToProps = state =>{
     return{
-        ings : state.ingredients,
-        price : state.totalPrice
+        ings : state.burgerBuilder.ingredients,
+        price : state.burgerBuilder.totalPrice,
+        loading : state.order.loading
     };
 }
 
 const mapDispatchToProps = dispatch => {
     return{
-        onOrder : (order) => dispatch(Orderactions.burgerStart(order))
+        onOrder : (order) => dispatch(Orderactions.purchaseBurger(order))
     };
 }
 

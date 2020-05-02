@@ -16,16 +16,28 @@ export const burgerFailed = (error) => {
     };
 }
 
-export const burgerStart = (orderData) => {
+export const burgerStart = () => {
+    return{
+        type : actionTypes.START_BURGER
+    }
+}
+
+export const purchaseBurger = (orderData) => {
     return dispatch => {
-        
-        axios.post('Orders.json',orderData)
+            dispatch(burgerStart());
+        axios.post('/Orders.json',orderData)
         .then(response => {
             console.log(response.data);
-            dispatch(burgerSuccess(response.data , orderData));
+            dispatch(burgerSuccess(response.data.name , orderData));
         })
         .catch(error =>{
            dispatch(burgerFailed(error));
         });
+    }
+}
+
+export const BurgerInit = () => {
+    return{
+        type : actionTypes.BURGER_INIT
     }
 }
