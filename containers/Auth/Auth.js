@@ -4,6 +4,8 @@ import Button from '../../components/UI/Button/Button';
 import classes from './Auth.css';
 import * as actions from '../../store/actions/index';
 import {connect} from 'react-redux';
+import Spinner from '../../components/UI/Spinner/Spinner';
+import {Redirect} from 'react-router-dom';
 
 class Auth extends Component{
 
@@ -111,8 +113,28 @@ class Auth extends Component{
             />
         });
 
+
+        if(this.props.loading){
+            form = <Spinner />;
+        }
+
+        let errorMsg = null;
+
+        if(this.props.error){
+            errorMsg = (
+             <p>{this.props.error.message}</p>
+            );
+        }
+
+        let isAuth = null;
+        if(this.props.isAuth){
+            isAuth = <Redirect to = '/' />;
+        }
+
         return(
             <div className = {classes.Auth}>
+                {isAuth}
+                {errorMsg}
                 <form onSubmit = {this.submitHandler}>
                     {form}
                     <Button btnType = 'Success'>SUBMIT</Button>
@@ -127,11 +149,18 @@ class Auth extends Component{
     }
 }
 
+const mapStateToProps = state => {
+    return{
+        loading : state.auth.loading,
+        error : state.auth.error,
+        isAuth : state.auth.tokenId !== null
+    };
+};
 
 const mapDispatchToProps = dispatch => {
     return{
         onAuth : (email,password , isSignUp) => dispatch(actions.auth(email,password , isSignUp))
     };
-}
+};
 
-export default connect(null, mapDispatchToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
