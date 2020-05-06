@@ -1,10 +1,10 @@
 import * as actionTypes from '../actions/actionType';
-import { setIng } from '../actions/BurgerBuilder';
 
 const InitialState = {
     ingredients : null,
     totalPrice : 4,
-    error : false
+    error : false,
+    building : false
 }
 
 const INGREDIENT_PRICES = {
@@ -23,7 +23,8 @@ const reducer = (state = InitialState , action) => {
                     ...state.ingredients,
                     [action.IngName] : state.ingredients[action.IngName] + 1
                 },
-                totalPrice : state.totalPrice + INGREDIENT_PRICES[action.IngName]
+                totalPrice : state.totalPrice + INGREDIENT_PRICES[action.IngName],
+                building : true
 
             };
         case actionTypes.REM_ING : 
@@ -33,7 +34,8 @@ const reducer = (state = InitialState , action) => {
                     ...state.ingredients,
                     [action.IngName] : state.ingredients[action.IngName] - 1
                 },
-                totalPrice : state.totalPrice - INGREDIENT_PRICES[action.IngName]
+                totalPrice : state.totalPrice - INGREDIENT_PRICES[action.IngName],
+                building : true
             };
         case actionTypes.SET_ING : 
             return{
@@ -46,7 +48,8 @@ const reducer = (state = InitialState , action) => {
                     
                 },
                 totalPrice : 4,
-                error : false
+                error : false,
+                building : false
             };
         case actionTypes.FAILED_ING : 
             return{

@@ -88,6 +88,11 @@ class Auth extends Component{
         });
     };
 
+    componentDidMount(){
+        if(!this.props.building && this.props.setPath !== '/'){
+            this.props.OnSetPath();
+        }
+    }
 
     render(){
 
@@ -128,7 +133,7 @@ class Auth extends Component{
 
         let isAuth = null;
         if(this.props.isAuth){
-            isAuth = <Redirect to = '/' />;
+            isAuth = <Redirect to = {this.props.setPath} />;
         }
 
         return(
@@ -153,13 +158,17 @@ const mapStateToProps = state => {
     return{
         loading : state.auth.loading,
         error : state.auth.error,
-        isAuth : state.auth.tokenId !== null
+        isAuth : state.auth.tokenId !== null,
+        setPath : state.auth.setPath,
+        building : state.burgerBuilder.building,
+        setPath : state.auth.setPath
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return{
-        onAuth : (email,password , isSignUp) => dispatch(actions.auth(email,password , isSignUp))
+        onAuth : (email,password , isSignUp) => dispatch(actions.auth(email,password , isSignUp)),
+        onSetPath : () => dispatch(actions.setPath('/'))
     };
 };
 
