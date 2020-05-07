@@ -89,8 +89,10 @@ class Auth extends Component{
     };
 
     componentDidMount(){
+        console.log(this.props.setPath);
         if(!this.props.building && this.props.setPath !== '/'){
             this.props.OnSetPath();
+            
         }
     }
 
