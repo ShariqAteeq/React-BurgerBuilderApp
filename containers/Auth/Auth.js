@@ -6,6 +6,7 @@ import * as actions from '../../store/actions/index';
 import {connect} from 'react-redux';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import {Redirect} from 'react-router-dom';
+import {updatedObject , checkValidity} from '../../shared/utility';
 
 class Auth extends Component{
 
@@ -35,7 +36,7 @@ class Auth extends Component{
                 value : '' ,
                 validation : {
                     required : true,
-                    minLength : 4
+                    minLength : 6
                 },
                 valid : false,
                 touched : false
@@ -45,38 +46,19 @@ class Auth extends Component{
         isSignUp : true
     };
 
-    checkValidity(value , rules){
-        let isValid = true;
-        if(rules.required){
-            isValid = value.trim() !== '' && isValid; //trim is used to remove whitespaces
-        }
-
-        if(rules.minLength){
-            isValid =value.length >= rules.minLength && isValid;
-        }
-
-        if(rules.maxLength){
-            isValid =value.length <= rules.maxLength && isValid;
-        }
-
-        return isValid;
-    }
-
     submitHandler = (event) => {
         event.preventDefault();
         this.props.onAuth(this.state.controls.Email.value , this.state.controls.Password.value , this.state.isSignUp);
     }
 
     inputHandler = (event , controlName) => {
-        const updatedControls = {
-            ...this.state.controls,
-            [controlName] : {
-                ...this.state.controls[controlName],
+        const updatedControls = updatedObject(this.state.controls , {
+            [controlName] : updatedObject(this.state.controls[controlName] , {
                 value : event.target.value,
-                valid : this.checkValidity(event.target.value , this.state.controls[controlName].validation),
+                valid : checkValidity(event.target.value , this.state.controls[controlName].validation),
                 touched : true
-            }
-        };
+            })
+        });
 
         this.setState({controls : updatedControls});
     }
@@ -163,7 +145,6 @@ const mapStateToProps = state => {
         isAuth : state.auth.tokenId !== null,
         setPath : state.auth.setPath,
         building : state.burgerBuilder.building,
-        setPath : state.auth.setPath
     };
 };
 

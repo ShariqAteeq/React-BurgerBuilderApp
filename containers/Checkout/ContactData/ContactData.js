@@ -7,6 +7,7 @@ import Input from '../../../components/UI/Input/Input';
 import {connect} from 'react-redux';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import * as Orderactions from '../../../store/actions/index'; 
+import {updatedObject , checkValidity} from '../../../shared/utility';
 
 class ContactData extends Component{
     
@@ -115,17 +116,18 @@ class ContactData extends Component{
     }
 
     inputHandler = (event , inputKey) => {
-        const updatedOrderForm = {
-            ...this.state.orderForm
-        }
-        const updatedFormElement = {
-            ...this.state.orderForm[inputKey]
-        }
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value , updatedFormElement.validation);
-        updatedOrderForm[inputKey] = updatedFormElement;
-        updatedFormElement.touched = true;
+       
+        const updatedFormElement = updatedObject(this.state.orderForm[inputKey] , {
+            value : event.target.value ,
+            valid : checkValidity(event.target.value , this.state.orderForm[inputKey].validation),
+            touched : true
 
+        });
+
+        const updatedOrderForm = updatedObject(this.state.orderForm , {
+            [inputKey] : updatedFormElement
+        });
+        
         let formValid = true;
         for(let key in updatedOrderForm){
             formValid = updatedOrderForm[key].valid && formValid
@@ -133,24 +135,6 @@ class ContactData extends Component{
 
         this.setState({orderForm: updatedOrderForm , formIsValid : formValid});
 
-    }
-
-
-    checkValidity(value , rules){
-        let isValid = true;
-        if(rules.required){
-            isValid = value.trim() !== '' && isValid; //trim is used to remove whitespaces
-        }
-
-        if(rules.minLength){
-            isValid =value.length >= rules.minLength && isValid;
-        }
-
-        if(rules.maxLength){
-            isValid =value.length <= rules.maxLength && isValid;
-        }
-
-        return isValid;
     }
 
     render(){
